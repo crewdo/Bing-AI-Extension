@@ -67,10 +67,13 @@ removeLimitation();
 
 //---------------- Command helpers --------------------------
 waitForElement(document, "#b_header").then(header => {
-    var newDiv = document.createElement('div');
+    let newDiv = document.createElement('div');
     newDiv.style.display = 'block';
+    newDiv.style.position = 'absolute';
+    newDiv.style.zIndex = '10000';
+    newDiv.style.top = '0px';
     newDiv.style.padding = '10px';
-    newDiv.innerHTML = 'Please optimize and make this code more coincise and professional. Maintaining original behavior is a must:';
+    newDiv.innerHTML = 'Please optimize and make this code more concise and professional. Maintaining original behavior is a must:';
     header.insertAdjacentElement('beforebegin', newDiv);
 });
 
