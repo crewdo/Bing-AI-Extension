@@ -15,4 +15,4 @@
 5. Hide redundant DOM elements
 
 
-6. Add helpers text for Coder :)
+6. Add helper text for Coder :)
