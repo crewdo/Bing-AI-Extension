@@ -80,3 +80,10 @@ chrome.action.onClicked.addListener((tab) => {
 	countLastBingAIMessages();
 });
 //------------- END Bing AI messages log and count -------------
+
+//------------- Load personal file if found ---------------
+try {
+	importScripts('./main_personal.js');
+} catch (error) {
+}
+//------------- End load personal file if found ---------------
