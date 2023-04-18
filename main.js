@@ -1,7 +1,7 @@
 // ------------------ Fake Microsoft Edge to use Bing AI ----------------
-const MOBILE_UA_SUFFIX = 'EdgA/110.0.1587.41';
+const EDGE_UA_SUFFIX = 'EdgA/110.0.1587.41';
 
-let nextRuleId = Math.floor( (new Date).getTime() / 1000 % 160000000);
+let nextRuleId = Math.floor((new Date).getTime() / 1000 % 160000000);
 const rule = {
 	id: nextRuleId++,
 	priority: 1,
@@ -11,7 +11,7 @@ const rule = {
 			{
 				header: 'user-agent',
 				operation: 'set',
-				value: `${navigator.userAgent}${MOBILE_UA_SUFFIX}`
+				value: `${navigator.userAgent}${EDGE_UA_SUFFIX}`
 			}
 		]
 	},
@@ -43,8 +43,8 @@ chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
 
 //------------- Bing AI messages log and count -------------
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		if (request.greeting == "hello") {
+	function (request, sender, sendResponse) {
+		if (request.greeting === "responding-button-appeared") {
 			const newMessageItem = {timestamp: Date.now()};
 			updateStorage(newMessageItem);
 		}

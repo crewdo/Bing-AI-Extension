@@ -26,9 +26,9 @@
   ],
   "host_permissions": ["*://*/*"],
   "icons": {
-    "16": "chibi2.png",
-    "48": "chibi2.png",
-    "128": "chibi2.png"
+    "16": "chibi.png",
+    "48": "chibi.png",
+    "128": "chibi.png"
   },
   "action":{
   }

@@ -1,24 +1,13 @@
-//---------- Counting message function by observe the Stop Respond Button ------------
-document.addEventListener("onWaitingRepondButtonShowing", function(event) {
-    chrome.runtime.sendMessage({greeting: event.detail});
-});
-
-const url = chrome.runtime.getURL('inject.js');
-const script = document.createElement('script');
-script.src = url;
-document.head.appendChild(script);
-
-//---------- Stop Bad Scroll function ------------
-function myListener(e) {
-    e.stopImmediatePropagation();
+//---------- Stop Bad Scroll function ----------------
+function stopImmediatePropagationListener(e) {
+	e.stopImmediatePropagation();
 }
 
-window.addEventListener('mousewheel', myListener, true);
-//---------- End Stop Bad Scroll function ------------
+window.addEventListener('mousewheel', stopImmediatePropagationListener, true);
+//---------- End Stop Bad Scroll function --------------
 
-
-//---------------- Remove Character Limitation ----------
-function waitForElement(parent, selector) {
+//----------------- Helper functions -------------------
+function elementOnReady(parent, selector) {
     return new Promise((resolve, reject) => {
         const interval = setInterval(function () {
             const element = parent.querySelector(selector);
@@ -30,57 +19,89 @@ function waitForElement(parent, selector) {
         }, 10);
     });
 }
+//----------------- End Helper functions -------------------
 
+//---------------- Remove Character Limitation -------------
 const removeLimitation = () => {
-    waitForElement(document, ".cib-serp-main")
-    .then(mainHost => {
-        const mainRoot = mainHost.shadowRoot;
-        return waitForElement(mainRoot, "#cib-action-bar-main");
-    })
-    .then(secondHost => {
-        const secondRoot = secondHost.shadowRoot;
-        return Promise.all([
-            waitForElement(secondRoot, "#searchbox"),
-            waitForElement(secondRoot, ".letter-counter"),
-            secondRoot
-        ]);
-    })
-    .then(([searchInput, letterCounter, secondRoot]) => {
-        searchInput.removeAttribute("maxlength");
-        letterCounter.childNodes[letterCounter.childNodes.length - 1].textContent = "♾️";
+	elementOnReady(document, ".cib-serp-main")
+	.then(mainHost => {
+		const mainRoot = mainHost.shadowRoot;
+		return elementOnReady(mainRoot, "#cib-action-bar-main");
+	})
+	.then(secondHost => {
+		const secondRoot = secondHost.shadowRoot;
+		return Promise.all([
+			elementOnReady(secondRoot, "#searchbox"),
+			elementOnReady(secondRoot, ".letter-counter"),
+			secondRoot
+		]);
+	})
+	.then(([searchInput, letterCounter, secondRoot]) => {
+		searchInput.removeAttribute("maxlength");
+		letterCounter.childNodes[letterCounter.childNodes.length - 1].textContent = "♾️";
 
-        const observer = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-                if (!searchInput.isConnected) {
-                    removeLimitation();
-                    observer.disconnect();
-                }
-            }
-        });
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (! searchInput.isConnected) {
+					removeLimitation();
+					observer.disconnect();
+				}
+			}
+		});
 
-        observer.observe(secondRoot, { childList: true });
-    });
+		observer.observe(secondRoot, {childList: true});
+	});
 };
 
 removeLimitation();
 //---------------- End Remove Character Limitation ----------
 
 //---------------- Command helpers --------------------------
-waitForElement(document, "#b_header").then(header => {
-    let newDiv = document.createElement('div');
-    newDiv.style.display = 'block';
-    newDiv.style.position = 'absolute';
-    newDiv.style.zIndex = '10000';
-    newDiv.style.top = '0px';
-    newDiv.style.padding = '10px';
-    newDiv.innerHTML = 'Please optimize and make this code more concise and professional. Maintaining original behavior is a must:';
-    header.insertAdjacentElement('beforebegin', newDiv);
+elementOnReady(document, "#b_header").then(header => {
+	let newDiv = document.createElement('div');
+	newDiv.style.display = 'block';
+	newDiv.style.position = 'absolute';
+	newDiv.style.zIndex = '10000';
+	newDiv.style.top = '0px';
+	newDiv.style.padding = '10px';
+	newDiv.innerHTML = 'Please optimize and make this code more concise and professional. Maintaining original behavior is a must:';
+	header.insertAdjacentElement('beforebegin', newDiv);
 });
 
-waitForElement(document, "#tallhead").then(tallheader => {
-    tallheader.innerHTML = '';
+elementOnReady(document, "#tallhead").then(header => {
+    header.innerHTML = '';
 });
 
-waitForElement(document, ".b_scopebar").then(scopeBar => {
-    scopeBar.style.display = 'none';
+elementOnReady(document, ".b_scopebar").then(scopeBar => {
+	scopeBar.style.display = 'none';
 });
+
+//---------- Observe Responding Button For Counting Message ---------------------
+const observeRespondingButtonForCountingMessage = () => {
+	elementOnReady(document, ".cib-serp-main")
+    .then(mainHost => {
+		const mainRoot = mainHost.shadowRoot;
+		return elementOnReady(mainRoot, "#cib-action-bar-main");
+	}).then(secondHost => {
+		const secondRoot = secondHost.shadowRoot;
+		return elementOnReady(secondRoot, "cib-typing-indicator");
+	}).then(thirdHost => {
+		const thirdRoot = thirdHost.shadowRoot;
+		return elementOnReady(thirdRoot, "#stop-responding-button");
+	}).then(button => {
+		const observer = new MutationObserver((mutationsList) => {
+			for (const mutation of mutationsList) {
+				if (mutation.type === 'attributes') {
+					if (mutation.attributeName === 'disabled' && ! button.hasAttribute('disabled')) {
+						chrome.runtime.sendMessage({greeting: 'responding-button-appeared'});
+					}
+				}
+			}
+		});
+
+		observer.observe(button, {attributes: true});
+	});
+};
+
+observeRespondingButtonForCountingMessage();
+//---------- End Observe Responding Button For Counting Message ---------------------
