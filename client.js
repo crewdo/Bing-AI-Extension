@@ -85,21 +85,18 @@ const observeRespondingButtonForCountingMessage = () => {
 	}).then(secondHost => {
 		const secondRoot = secondHost.shadowRoot;
 		return elementOnReady(secondRoot, "cib-typing-indicator");
-	}).then(thirdHost => {
-		const thirdRoot = thirdHost.shadowRoot;
-		return elementOnReady(thirdRoot, "#stop-responding-button");
-	}).then(button => {
+	}).then(indicator => {
 		const observer = new MutationObserver((mutationsList) => {
 			for (const mutation of mutationsList) {
 				if (mutation.type === 'attributes') {
-					if (mutation.attributeName === 'disabled' && ! button.hasAttribute('disabled')) {
+					if (mutation.attributeName === 'cancelable' && indicator.hasAttribute('cancelable')) {
 						chrome.runtime.sendMessage({greeting: 'responding-button-appeared'});
 					}
 				}
 			}
 		});
 
-		observer.observe(button, {attributes: true});
+		observer.observe(indicator, {attributes: true});
 	});
 };
 
