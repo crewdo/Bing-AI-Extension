@@ -64,7 +64,7 @@ elementOnReady(document, "#b_header").then(header => {
 	newDiv.style.zIndex = '10000';
 	newDiv.style.top = '0px';
 	newDiv.style.padding = '10px';
-	newDiv.innerHTML = 'Please optimize and make this code more concise and professional. Maintaining original behavior is a must:';
+	newDiv.innerHTML = '<p>Dont search on internet.</p><p>Please optimize and make this code more concise and professional. Maintaining original behavior is a must:</p>';
 	header.insertAdjacentElement('beforebegin', newDiv);
 });
 
